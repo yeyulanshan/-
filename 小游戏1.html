@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>消除类游戏</title>
+    <style>
+         body {
+        font-family: Arial, sans-serif; /* 添加整体字体 */
+        background-color: #f0f0f0; /* 背景颜色 */
+    }
+
+    #board { 
+        display: grid; 
+        grid-template-columns: repeat(10, 100px); 
+        gap: 10px; /* 增加方块之间的间距 */
+        padding: 20px; /* 增加边距 */
+    }
+    
+    .cell { 
+        width: 100px; 
+        height: 100px; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        cursor: pointer; 
+        border-radius: 10px; /* 圆角 */
+        border: 2px solid #ccc; /* 边框 */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 阴影 */
+        transition: transform 0.2s; /* 动效 */
+    }
+
+    .cell:hover {
+        transform: scale(1.05); /* 鼠标悬停放大效果 */
+    }
+
+    @keyframes fadeOut { 
+        0% { opacity: 1; transform: scale(1); } 
+        100% { opacity: 0; transform: scale(0); } 
+    }
+
+    #message { 
+        display: none; 
+        font-size: 30px; 
+        text-align: center; 
+        margin-top: 20px; 
+        color: #4CAF50; /* 绿色文本 */
+    }
+    </style>
+</head>
+<body>
+    <div id="board"></div>
+    <div id="message" style="color: rgb(0, 255, 123);">吕浩制作：恭喜通关！</div> <!-- 提示信息 -->
+    <script>
+        const board = document.getElementById('board');
+        const message = document.getElementById('message');
+        const colors = ['red', 'rgb(0,255,123)', 'blue', 'yellow', 'aqua', 'orange'];
+        let remainingCells = 100; // 剩余方块数量
+
+        // 初始化网格
+        function initBoard() {
+            for (let i = 0; i < 100; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                cell.addEventListener('click', () => selectCell(cell));
+                board.appendChild(cell);
+            }
+        }
+
+        let selectedCells = [];
+        
+        function selectCell(cell) {
+            selectedCells.push(cell);
+            cell.style.opacity = 0.5; // 显示选中的状态
+            if (selectedCells.length === 4) {
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            if (selectedCells[0].style.backgroundColor === selectedCells[1].style.backgroundColor) {
+                selectedCells.forEach(cell => {
+                    cell.style.animation = 'fadeOut 0.5s forwards'; // 应用动画
+                    setTimeout(() => {
+                        cell.remove(); // 延迟删除单元格
+                        remainingCells--; // 减少剩余方块数量
+                        checkGameOver(); // 检查游戏是否结束
+                    }, 500);
+                });
+            } else {
+                selectedCells.forEach(cell => (cell.style.opacity = 1)); // 取消选中状态
+            }
+            selectedCells = [];
+        }
+
+        function checkGameOver() {
+            if (remainingCells === 0) { // 如果所有方块都消除
+                message.style.display = 'block'; // 显示通关信息
+            }
+        }
+
+        initBoard();
+    </script>
+</body>
+</html>
